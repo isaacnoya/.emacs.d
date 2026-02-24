@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: ciao-inferior-module
+# key: <mod
+# --
+module($0).
