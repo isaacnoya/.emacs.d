@@ -171,7 +171,6 @@
   (global-eldoc-mode))
 
 (require 'completions-config)
-(require 'org-config)
 (require 'languages-config)
 (require 'evil-config)
 (require 'misc-packages-config)
