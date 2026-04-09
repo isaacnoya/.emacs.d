@@ -21,7 +21,11 @@
 
 (use-package vterm
   :ensure t
-  :straight t)
+  :straight t
+  :commands (vterm vterm-other-window vterm-other-frame)
+  :init
+  ;; Build the module automatically when vterm is first used.
+  (setq vterm-always-compile-module t))
 
 (use-package hackernews
   :ensure t

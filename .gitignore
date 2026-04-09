@@ -11,6 +11,7 @@ tree-sitter/
 
 # Not the mail config
 elisp/mail-config.el
+mail-local.el
 
 # Emacs session files
 auto-save-list/
@@ -27,3 +28,6 @@ network-security.data
 # OS-specific files
 *~
 .DS_Store
+
+# emacs web
+url/

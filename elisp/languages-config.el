@@ -1,10 +1,5 @@
 ;;; `languages-config.el' --- (Programming) languages configuration  -*- lexical-binding: t; -*-
 
-;; Ciao
-(if (file-exists-p "~/clip/Systems/ciao-devel/bndls/ciao_emacs/elisp/ciao-site-file.el")
-  (load-file "~/clip/Systems/ciao-devel/bndls/ciao_emacs/elisp/ciao-site-file.el"))
-(add-hook 'ciao-mode-hook #'display-line-numbers-mode)
-
 ;; CC mode
 (use-package cc-mode
   :ensure nil
@@ -67,6 +62,7 @@
   :commands (lsp lsp-deferred)
   :hook ((lsp-mode . lsp-enable-which-key-integration)
          (lean4-mode . lsp-deferred)
+         (java-mode . lsp-deferred)
          (typescript-mode . lsp-deferred))
   :custom
   (lsp-keymap-prefix "C-c l")
@@ -106,6 +102,15 @@
   (lsp-headerline-breadcrumb-enable nil)                ;; Enable symbol numbers in the headerline.
   ;; Semantic settings
   (lsp-semantic-tokens-enable t))                       ;; Disable semantic tokens.
+
+;; Java
+(use-package lsp-java
+  :ensure t
+  :straight t
+  :after lsp-mode
+  :config
+  (setq lsp-java-java-path (or (executable-find "java")
+                               lsp-java-java-path)))
 
 ;; Lean4
 (use-package lean4-mode
@@ -154,9 +159,7 @@
   :hook (pdf-view-mode . (lambda ()
                            (set (make-local-variable 'evil-emacs-state-cursor) (list nil))
                            (setq display-line-numbers-mode nil)
-                           (if (eq system-type 'darwin)
-                               (setq pdf-view-use-scaling t)
-                             (setq pdf-view-use-scaling nil)))))
+                           (setq-local pdf-view-use-scaling t))))
 
 ;; Install/load PDF-tools
 (require 'pdf-tools)
