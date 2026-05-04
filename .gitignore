@@ -31,3 +31,5 @@ network-security.data
 
 # emacs web
 url/
+
+session.*
