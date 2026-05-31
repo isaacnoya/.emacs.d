@@ -40,7 +40,10 @@
   (create-lockfiles nil)                     ;; Prevent the creation of lock files when editing.
   (delete-by-moving-to-trash t)              ;; Move deleted files to the trash
   (display-line-numbers-type 'relative)      ;; Use relative line numbering in programming modes.
-  ;; (global-auto-revert-non-file-buffers t)    ;; Automatically refresh non-file buffers.
+  (auto-revert-interval 1)                   ;; Poll quickly if file notifications are unavailable.
+  (auto-revert-use-notify t)                 ;; React immediately when another program saves a file.
+  (auto-revert-verbose t)                    ;; Report reloads and skipped modified buffers.
+  (global-auto-revert-non-file-buffers t)    ;; Refresh buffers such as Dired after external changes.
   (history-length 25)                        ;; Set the length of the command history.
   (inhibit-startup-message t)                ;; Disable the startup message when Emacs launches.
   (initial-scratch-message "")               ;; Clear the initial message in the *scratch* buffer.
@@ -71,6 +74,7 @@
   (editorconfig-mode 1)        ;; Enable reading `.editorconfig' files
   (global-hl-line-mode -1)     ;; Disable highlight of the current line
   (recentf-mode 1)             ;; Enable tracking of recently opened files.
+  (global-auto-revert-mode 1)  ;; Reload unchanged buffers after edits outside Emacs.
   (savehist-mode 1)            ;; Enable saving of command history.
   (save-place-mode 1)          ;; Enable saving the place in files for easier return.
   (winner-mode 1)              ;; Enable winner mode to easily undo window configuration changes.
