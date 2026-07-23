@@ -30,6 +30,7 @@
   :ensure t
   :straight t
   :after emacs
+  :functions (global-treesit-auto-mode)
   :custom
   (treesit-auto-install nil)
   :mode
@@ -131,6 +132,7 @@
 (use-package yasnippet
   :ensure t
   :straight t
+  :functions (yas-reload-all)
   :config
   (setq yas-snippet-dirs '("~/.emacs.d/snippets"))
   (yas-reload-all)
@@ -152,13 +154,15 @@
 (use-package pdf-tools
   :ensure t
   :straight t
-  :custom (pdf-view-display-size 'fit-page)
+  :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
+  :magic ("%PDF" . pdf-view-mode)
+  :custom (pdf-view-display-size 'fit-width)
   :bind (:map pdf-view-mode-map
               ("C-s"     . isearch-forward)
               ("C-c C-f" . my/slides-presentation))
   :hook (pdf-view-mode . (lambda ()
                            (set (make-local-variable 'evil-emacs-state-cursor) (list nil))
-                           (setq display-line-numbers-mode nil)
+                           (display-line-numbers-mode -1)
                            (setq-local pdf-view-use-scaling t))))
 
 ;; Install/load PDF-tools
@@ -170,6 +174,18 @@
   :defer t
   :ensure t
   :straight t
+  :functions (LaTeX-fill-paragraph
+              TeX-revert-document-buffer)
+  :defines (TeX-auto-save
+            TeX-parse-self
+            TeX-show-compilation
+            TeX-global-PDF-mode
+            TeX-clean-confirm
+            TeX-command-default
+            TeX-view-program-selection
+            TeX-source-correlate-mode
+            TeX-source-correlate-method
+            TeX-source-correlate-start-server)
   :hook
   (LaTeX-mode . (lambda ()
                   (pdf-tools-install) ;; TODO: Redundant?

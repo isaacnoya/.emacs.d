@@ -70,7 +70,7 @@
   :init
   (menu-bar-mode 0)
   (tool-bar-mode 0)
-  (when scroll-bar-mode (scroll-bar-mode 0))
+  (when (fboundp 'scroll-bar-mode) (scroll-bar-mode 0))
   (editorconfig-mode 1)        ;; Enable reading `.editorconfig' files
   (global-hl-line-mode -1)     ;; Disable highlight of the current line
   (recentf-mode 1)             ;; Enable tracking of recently opened files.
@@ -106,11 +106,11 @@
   (setq treesit-font-lock-level 4)
   (setq system-time-locale "C")
   (setq trash-directory (concat (getenv "HOME") "/Trash/"))
-  (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 110)
+  (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 130)
   (when (eq system-type 'darwin)
     (setq mac-command-modifier 'meta)
     (setq mac-option-modifier 'none)
-    (set-face-attribute 'default nil :family "JetBrainsMono Nerd Font" :height 130 :weight 'light))
+    (set-face-attribute 'default nil :family "JetBrainsMono Nerd Font" :height 160 :weight 'light))
   (setq custom-file (locate-user-emacs-file "custom-vars.el")) ;; Specify the custom file path.
   (load custom-file 'noerror 'nomessage)                       ;; Load the custom file quietly, ignoring errors.
   (set-display-table-slot standard-display-table 'vertical-border (make-glyph-code ?│)) ;; Vertical divisor (│).
@@ -152,7 +152,15 @@
       (display-buffer-in-side-window)
       (window-height . 0.25)
       (side . bottom)
-      (slot . 1)))))
+      (slot . 1))))
+  :bind
+  (("C-x y" . split-window-right)
+   ("C-x t" . split-window-below)
+   ("C-x w" . delete-window)
+   ("C-x q" . kill-this-buffer)
+   ("C-x C-o" . find-file)
+   ("C-x TAB" . other-window)
+   ("C-x C-z" . window-swap-states)))
 
 (use-package dired
   :ensure nil

@@ -3,6 +3,7 @@
 (use-package magit
   :ensure t
   :straight t
+  :functions (magit-format-file-nerd-icons)
   :config
   (setopt magit-format-file-function #'magit-format-file-nerd-icons)
   :defer t)
@@ -22,6 +23,7 @@
 (use-package vterm
   :ensure t
   :straight t
+  :bind ("C-x C-p" . vterm)
   :commands (vterm vterm-other-window vterm-other-frame)
   :init
   ;; Build the module automatically when vterm is first used.

@@ -5,6 +5,9 @@
   :ensure t
   :straight t
   :defer t
+  :functions (evil-global-set-key
+              evil-set-initial-state)
+  :defines (evil-insert-state-map)
   :hook
   (after-init . evil-mode)
   :init

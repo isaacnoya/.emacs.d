@@ -1,5 +1,8 @@
 ;;; `my-functions.el' --- My own functions  -*- lexical-binding: t; -*-
 
+(declare-function evil-emacs-state "evil-states")
+(declare-function evil-normal-state "evil-states")
+
 (defun my/get-pwd (&rest keys)
   "Decrypt a password"
   (let ((result (apply #'auth-source-search keys)))
