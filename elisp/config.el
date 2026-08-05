@@ -186,6 +186,7 @@
 (require 'languages-config)
 (require 'evil-config)
 (require 'misc-packages-config)
+(require 'codex-config)
 (require 'ui-config)
 
 (unless (eq system-type 'darwin)

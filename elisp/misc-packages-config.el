@@ -23,7 +23,18 @@
 (use-package vterm
   :ensure t
   :straight t
-  :bind ("C-x C-p" . vterm)
+  :preface
+  (defun kj/vterm-horizontal ()
+    "Open vterm in a horizontal split below the current window."
+    (interactive)
+    (let* ((buffer-name "*vterm*")
+           (window (get-buffer-window buffer-name nil)))
+      (if window
+          (select-window window)
+        (select-window (split-window-below))
+        (vterm buffer-name))))
+  :bind (("C-x C-p" . vterm)
+         ("C-x <escape>" . kj/vterm-horizontal))
   :commands (vterm vterm-other-window vterm-other-frame)
   :init
   ;; Build the module automatically when vterm is first used.

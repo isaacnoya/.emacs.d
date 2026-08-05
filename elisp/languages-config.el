@@ -49,11 +49,53 @@
           (haskell    . ("https://github.com/tree-sitter/tree-sitter-haskell"    "master"  "src"))
           (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript" "v0.23.1" "src"))
           (json       . ("https://github.com/tree-sitter/tree-sitter-json"       "v0.24.8" "src"))
+          (python     . ("https://github.com/tree-sitter/tree-sitter-python"     "master"  "src"))
           (rust       . ("https://github.com/tree-sitter/tree-sitter-rust"       "v0.23.0" "src"))
           (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "master"  "typescript/src"))))
   :config
   ;; (treesit-auto-add-to-auto-mode-alist 'all)
   (global-treesit-auto-mode t))
+
+;; Python
+(use-package python
+  :ensure nil
+  :mode ("\\.py\\'" . python-mode)
+  :hook (python-base-mode . lsp-deferred)
+  :custom
+  (python-indent-offset 4))
+
+;; Debug Adapter Protocol
+(use-package dap-mode
+  :ensure t
+  :straight t
+  :after lsp-mode
+  :commands (dap-debug
+             dap-debug-last
+             dap-debug-recent
+             dap-breakpoint-toggle
+             dap-breakpoint-delete-all)
+  :hook (python-base-mode . dap-mode)
+  :custom
+  (dap-auto-configure-features '(sessions locals controls tooltip))
+  :bind
+  (:map dap-mode-map
+        ("C-c d d" . dap-debug)
+        ("C-c d l" . dap-debug-last)
+        ("C-c d r" . dap-debug-recent)
+        ("C-c d b" . dap-breakpoint-toggle)
+        ("C-c d B" . dap-breakpoint-delete-all)
+        ("C-c d c" . dap-continue)
+        ("C-c d n" . dap-next)
+        ("C-c d i" . dap-step-in)
+        ("C-c d o" . dap-step-out)
+        ("C-c d q" . dap-disconnect))
+  :config
+  (dap-auto-configure-mode 1)
+  (require 'dap-python)
+  (setq dap-python-debugger 'debugpy
+        dap-python-executable (or (executable-find "python3")
+                                  (executable-find "python")
+                                  "python3")))
 
 ;; LSP
 (use-package lsp-mode
@@ -120,6 +162,105 @@
                         :repo "leanprover-community/lean4-mode"
                         :files ("*.el" "data"))
   :commands lean4-mode)
+
+;; Answer Set Programming / clingo
+(require 'compile)
+
+(defgroup kj-clingo nil
+  "Local support for editing and running clingo programs."
+  :group 'languages)
+
+(defcustom kj-clingo-program (or (executable-find "clingo") "clingo")
+  "Program used to run clingo."
+  :type 'string
+  :group 'kj-clingo)
+
+(defcustom kj-clingo-options '()
+  "Default command-line options passed to clingo."
+  :type '(repeat string)
+  :group 'kj-clingo)
+
+(defconst kj-clingo-font-lock-keywords
+  `((,(concat "#"
+              (regexp-opt '("const" "defined" "edge" "external" "heuristic"
+                            "include" "maximize" "minimize" "program"
+                            "project" "script" "show"))
+              "\\_>")
+     . font-lock-preprocessor-face)
+    ("\\_<not\\_>" . font-lock-keyword-face)
+    ("\\_<[A-Z_][A-Za-z0-9_']*\\_>" . font-lock-variable-name-face)
+    ("\\_<[a-z][A-Za-z0-9_']*\\_>" . font-lock-function-name-face)
+    ("\\(:-\\|:~\\|[{}();,.]\\)" . font-lock-builtin-face))
+  "Font-lock rules for `kj-clingo-mode'.")
+
+(defvar kj-clingo-mode-syntax-table
+  (let ((table (make-syntax-table)))
+    (modify-syntax-entry ?% "<" table)
+    (modify-syntax-entry ?\n ">" table)
+    (modify-syntax-entry ?_ "w" table)
+    table)
+  "Syntax table for `kj-clingo-mode'.")
+
+(defvar kj-clingo-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-c C-b") #'kj/clingo-run-file)
+    (define-key map (kbd "C-c C-k") #'kj/clingo-run-file)
+    map)
+  "Keymap for `kj-clingo-mode'.")
+
+(add-to-list 'compilation-error-regexp-alist-alist
+             '(kj-clingo "^\\([^:\n]+\\):\\([0-9]+\\):\\([0-9]+\\)" 1 2 3))
+
+(defun kj/clingo-exit-message-function (process-status exit-status msg)
+  "Return a clingo-aware compilation status message."
+  (let ((status (cdr (assoc exit-status '((0 . "done")
+                                          (10 . "satisfiable")
+                                          (20 . "unsatisfiable")
+                                          (30 . "all models found"))))))
+    (if status
+        (cons (format "clingo %s\n" status) status)
+      (cons msg process-status))))
+
+(define-compilation-mode kj-clingo-compilation-mode "Clingo"
+  "Compilation mode for clingo output."
+  (setq-local compilation-error-regexp-alist '(kj-clingo))
+  (setq-local compilation-exit-message-function
+              #'kj/clingo-exit-message-function))
+
+(defun kj/clingo-file-command ()
+  "Build a clingo command for the current file."
+  (unless buffer-file-name
+    (user-error "This buffer is not visiting a file"))
+  (mapconcat #'shell-quote-argument
+             (append (list kj-clingo-program)
+                     kj-clingo-options
+                     (list (file-relative-name buffer-file-name)))
+             " "))
+
+(defun kj/clingo-set-compile-command ()
+  "Set `compile-command' for clingo buffers."
+  (when buffer-file-name
+    (setq-local compile-command (kj/clingo-file-command))))
+
+(defun kj/clingo-run-file ()
+  "Save and run clingo on the current file."
+  (interactive)
+  (save-buffer)
+  (compilation-start (kj/clingo-file-command)
+                     #'kj-clingo-compilation-mode
+                     (lambda (_) "*clingo*")))
+
+(define-derived-mode kj-clingo-mode prog-mode "Clingo"
+  "Major mode for editing Answer Set Programming files for clingo."
+  :syntax-table kj-clingo-mode-syntax-table
+  (setq-local font-lock-defaults '(kj-clingo-font-lock-keywords))
+  (setq-local comment-start "% ")
+  (setq-local comment-end "")
+  (setq-local indent-tabs-mode nil)
+  (kj/clingo-set-compile-command))
+
+(add-to-list 'auto-mode-alist '("\\.lp\\'" . kj-clingo-mode))
+(add-to-list 'auto-mode-alist '("\\.asp\\'" . kj-clingo-mode))
 
 ;; Auto-match parentheses
 (use-package smartparens
