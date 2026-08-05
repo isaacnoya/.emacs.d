@@ -2,7 +2,7 @@
 
 ;; Update load-path
 (add-to-list 'load-path (expand-file-name "elisp" user-emacs-directory))
-
+(add-to-list 'default-frame-alist '(undecorated . t))
 ;; Require some functions
 (require 'my-functions)
 

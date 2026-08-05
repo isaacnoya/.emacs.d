@@ -116,6 +116,16 @@
   (set-display-table-slot standard-display-table 'vertical-border (make-glyph-code ?│)) ;; Vertical divisor (│).
   (setq grep-command "rg -nS --no-heading " grep-use-null-device nil)) ;; Use ripgrep
 
+(use-package browse-url
+  :ensure nil
+  :custom
+  (browse-url-browser-function 'eww-browse-url))
+
+(use-package eww
+  :ensure nil
+  :custom
+  (eww-search-prefix "https://duckduckgo.com/html/?q="))
+
 ;; Centralize backup files under .emacs.d
 (setopt make-backup-file-name-function
 	    (lambda (fpath)
@@ -157,7 +167,8 @@
   (("C-x y" . split-window-right)
    ("C-x t" . split-window-below)
    ("C-x w" . delete-window)
-   ("C-x q" . kill-this-buffer)
+   ("C-x q" . my/kill-buffer-process-and-window)
+   ("C-x C-f" . my/find-file-or-browse-url)
    ("C-x C-o" . find-file)
    ("C-x TAB" . other-window)
    ("C-x C-z" . window-swap-states)))

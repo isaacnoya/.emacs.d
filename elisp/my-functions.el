@@ -19,6 +19,37 @@
     (setenv "PATH" (string-join path-list path-separator))
     (setq exec-path path-list)))
 
+(defun my/url-like-p (target)
+  "Return non-nil when TARGET looks like a URL."
+  (string-match-p "\\`[[:alpha:]][[:alnum:]+.-]*://" target))
+
+(defun my/find-file-or-browse-url (target)
+  "Open TARGET as a URL when it looks like one, otherwise visit it as a file."
+  (interactive
+   (list
+    (read-string "Find file or URL: " (thing-at-point 'url))))
+  (if (my/url-like-p target)
+      (browse-url target)
+    (find-file target)))
+
+(defun my/kill-buffer-and-window ()
+  "Kill the current buffer and delete the selected window."
+  (interactive)
+  (let ((buffer (current-buffer)))
+    (when (kill-buffer buffer)
+      (unless (one-window-p)
+        (delete-window)))))
+
+(defun my/kill-buffer-process-and-window ()
+  "Kill the current buffer's process and delete the selected window."
+  (interactive)
+  (let ((process (get-buffer-process (current-buffer))))
+    (if (process-live-p process)
+        (kill-process process)
+      (message "No live process in current buffer"))
+    (unless (one-window-p)
+      (delete-window))))
+
 ;; Local vars
 (defvar presentation-mode-active nil
   "A variable to keep track wether presentation mode is active.")
