@@ -35,6 +35,20 @@
   (nerd-icons-completion-mode)
   (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
 
+(use-package dashboard
+  :ensure t
+  :straight t
+  :custom
+  (dashboard-banner-logo-title "Archivos recientes")
+  (dashboard-center-content t)
+  (dashboard-items '((recents . 10)))
+  (dashboard-set-heading-icons t)
+  (dashboard-set-file-icons t)
+  (dashboard-show-shortcuts nil)
+  (dashboard-startup-banner 'official)
+  :config
+  (dashboard-setup-startup-hook))
+
 ;; Provide ourselves
 (provide 'ui-config)
 

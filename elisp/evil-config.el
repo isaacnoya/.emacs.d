@@ -19,6 +19,10 @@
   :config
   (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
   (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+  (define-key evil-insert-state-map (kbd "M-<left>") 'backward-word)
+  (define-key evil-insert-state-map (kbd "M-<right>") 'forward-word)
+  (define-key evil-insert-state-map (kbd "s-<left>") 'move-beginning-of-line)
+  (define-key evil-insert-state-map (kbd "s-<right>") 'move-end-of-line)
 
   ;; (define-key evil-normal-state-map (kbd "C-d")
   ;;   		  (lambda ()

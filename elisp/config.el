@@ -109,7 +109,9 @@
   (set-face-attribute 'default nil :family "JetBrainsMono NF" :height 130)
   (when (eq system-type 'darwin)
     (setq mac-command-modifier 'meta)
-    (setq mac-option-modifier 'none)
+    (setq mac-option-modifier 'super)
+    (when (boundp 'mac-right-option-modifier)
+      (setq mac-right-option-modifier 'none))
     (set-face-attribute 'default nil :family "JetBrainsMono Nerd Font" :height 160 :weight 'light))
   (setq custom-file (locate-user-emacs-file "custom-vars.el")) ;; Specify the custom file path.
   (load custom-file 'noerror 'nomessage)                       ;; Load the custom file quietly, ignoring errors.
