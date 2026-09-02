@@ -31,6 +31,12 @@
                          ("org"            . "https://orgmode.org/elpa/")
                          ("elpa"           . "https://elpa.gnu.org/packages/")))
 
+;; Make Lean's Elan-managed tools visible to Emacs and lean4-mode.
+(let ((elan-bin (expand-file-name "~/.elan/bin")))
+  (when (file-directory-p elan-bin)
+    (add-to-list 'exec-path elan-bin)
+    (setenv "PATH" (concat elan-bin path-separator (getenv "PATH")))))
+
 ;; Core Emacs configuration
 (use-package emacs
   :ensure nil
@@ -88,6 +94,7 @@
   ;; Custom keybinds
   (global-unset-key (kbd "M-%"))
   (global-set-key (kbd "M-%") 'query-replace-regexp)
+  (global-set-key (kbd "C-c f") 'toggle-frame-fullscreen)
 
   ;; Add a hook to run code after Emacs has fully initialized.
   (add-hook 'after-init-hook
@@ -202,7 +209,7 @@
 (require 'codex-config)
 (require 'ui-config)
 
-(unless (eq system-type 'darwin)
+(when (locate-library "mail-config")
   (require 'mail-config))
 
 (use-package ef-themes

@@ -1,0 +1,17 @@
+# Copy to ~/.msmtprc, chmod 600 ~/.msmtprc, and replace the placeholders.
+
+defaults
+auth on
+tls on
+tls_trust_file /etc/ssl/cert.pem
+logfile ~/.msmtp.log
+
+account hotmail
+host smtp-mail.outlook.com
+port 587
+from isaac_nv@hotmail.es
+user isaac_nv@hotmail.es
+auth xoauth2
+passwordeval oama access isaac_nv@hotmail.es
+
+account default : hotmail

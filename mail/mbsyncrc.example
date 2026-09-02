@@ -1,0 +1,32 @@
+# Copy to ~/.mbsyncrc and replace the placeholders.
+# OAuth2 token command examples:
+#   oama access isaac_nv@hotmail.es
+
+Create Both
+Expunge Both
+SyncState *
+
+IMAPAccount hotmail
+Host outlook.office365.com
+Port 993
+User isaac_nv@hotmail.es
+PassCmd "oama access isaac_nv@hotmail.es"
+AuthMechs XOAUTH2
+TLSType IMAPS
+Timeout 120
+
+IMAPStore hotmail-remote
+Account hotmail
+
+MaildirStore hotmail-local
+Path ~/Mail/hotmail/
+Inbox ~/Mail/hotmail/Inbox
+SubFolders Verbatim
+
+Channel hotmail
+Far :hotmail-remote:
+Near :hotmail-local:
+Patterns "INBOX" "Sent" "Drafts" "Archive" "Deleted Items"
+Create Both
+Expunge Both
+SyncState *
