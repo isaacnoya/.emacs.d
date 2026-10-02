@@ -33,9 +33,12 @@
     (find-file target)))
 
 (defun my/kill-buffer-and-window ()
-  "Kill the current buffer and delete the selected window."
+  "Kill the current buffer's process, kill the buffer, and delete its window."
   (interactive)
-  (let ((buffer (current-buffer)))
+  (let ((buffer (current-buffer))
+        (process (get-buffer-process (current-buffer))))
+    (when (process-live-p process)
+      (kill-process process))
     (when (kill-buffer buffer)
       (unless (one-window-p)
         (delete-window)))))

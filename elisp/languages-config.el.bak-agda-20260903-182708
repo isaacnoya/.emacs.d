@@ -310,48 +310,6 @@
 (require 'pdf-tools)
 (pdf-tools-install)
 
-;; BEGIN kj latex helpers
-(defconst kj/latex-project-template
-  "\\documentclass{article}
-
-\\usepackage[utf8]{inputenc}
-\\usepackage[T1]{fontenc}
-\\usepackage{amsmath,amssymb}
-\\usepackage{graphicx}
-
-\\title{Title}
-\\author{}
-\\date{\\today}
-
-\\begin{document}
-
-\\maketitle
-
-Hello, LaTeX.
-
-\\end{document}
-"
-  "Template inserted by `kj/new-latex-project'.")
-
-(defun kj/new-latex-project (directory name)
-  "Create a simple LaTeX project in DIRECTORY using NAME as the main file."
-  (interactive
-   (list (read-directory-name "Project directory: ")
-         (read-string "Main TeX file name: " "main")))
-  (let* ((project-dir (file-name-as-directory (expand-file-name directory)))
-         (base-name (file-name-sans-extension name))
-         (tex-file (expand-file-name (concat base-name ".tex") project-dir))
-         (build-dir (expand-file-name "build" project-dir)))
-    (make-directory project-dir t)
-    (make-directory build-dir t)
-    (unless (file-exists-p tex-file)
-      (with-temp-file tex-file
-        (insert kj/latex-project-template)))
-    (find-file tex-file)))
-
-(global-set-key (kbd "C-c n l") #'kj/new-latex-project)
-;; END kj latex helpers
-
 ;; AUCTeX
 (use-package auctex
   :defer t
@@ -365,7 +323,6 @@ Hello, LaTeX.
             TeX-global-PDF-mode
             TeX-clean-confirm
             TeX-command-default
-            TeX-command-list
             TeX-view-program-selection
             TeX-source-correlate-mode
             TeX-source-correlate-method
@@ -380,23 +337,12 @@ Hello, LaTeX.
 						    :append :local)
 
        	          (setq fill-column 70)
-                  (with-eval-after-load 'tex
-                    (setcdr (assoc "LaTeXMk" TeX-command-list)
-                            '("mkdir -p build && latexmk -pdf -interaction=nonstopmode -synctex=1 -auxdir=build %s"
-                              TeX-run-TeX nil t
-                              :help "Run latexmk with auxiliary files in build/")))
-                  (add-to-list 'TeX-command-list
-                               '("LatexMk"
-                                 "mkdir -p build && latexmk -pdf -interaction=nonstopmode -synctex=1 -auxdir=build %s"
-                                 TeX-run-TeX nil t
-                                 :help "Run latexmk with auxiliary files in build/")
-                               t)
                   (setq TeX-auto-save t
                         TeX-parse-self t
                         TeX-show-compilation nil
                         TeX-global-PDF-mode t
                         TeX-clean-confirm nil
-                        TeX-command-default "LatexMk"
+                        TeX-command-default "LaTeX"
                         TeX-view-program-selection '((output-pdf "PDF Tools"))
                         TeX-source-correlate-mode t
                         TeX-source-correlate-method '((dvi . source-specials)
@@ -412,25 +358,3 @@ Hello, LaTeX.
 (provide 'languages-config)
 
 ;;; `languages-config.el' ends here
-
-;; BEGIN Agda configuration
-(defun kj/agda-emacs-mode-file ()
-  "Return the Agda Emacs mode file installed with Agda."
-  (string-trim
-   (shell-command-to-string
-    (if (executable-find "agda")
-        "agda --emacs-mode locate"
-      "agda-mode locate"))))
-
-(use-package agda2-mode
-  :ensure nil
-  :mode ("\\.agda\\'" . agda2-mode)
-  :load-path (lambda ()
-               (let ((agda-mode-file (kj/agda-emacs-mode-file)))
-                 (when (file-readable-p agda-mode-file)
-                   (list (file-name-directory agda-mode-file)))))
-  :init
-  (when (or (executable-find "agda")
-            (executable-find "agda-mode"))
-    (load-file (kj/agda-emacs-mode-file))))
-;; END Agda configuration

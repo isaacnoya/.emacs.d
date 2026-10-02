@@ -380,11 +380,6 @@ Hello, LaTeX.
 						    :append :local)
 
        	          (setq fill-column 70)
-                  (with-eval-after-load 'tex
-                    (setcdr (assoc "LaTeXMk" TeX-command-list)
-                            '("mkdir -p build && latexmk -pdf -interaction=nonstopmode -synctex=1 -auxdir=build %s"
-                              TeX-run-TeX nil t
-                              :help "Run latexmk with auxiliary files in build/")))
                   (add-to-list 'TeX-command-list
                                '("LatexMk"
                                  "mkdir -p build && latexmk -pdf -interaction=nonstopmode -synctex=1 -auxdir=build %s"

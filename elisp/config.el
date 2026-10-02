@@ -176,7 +176,7 @@
   (("C-x y" . split-window-right)
    ("C-x t" . split-window-below)
    ("C-x w" . delete-window)
-   ("C-x q" . my/kill-buffer-process-and-window)
+   ("C-x q" . my/kill-buffer-and-window)
    ("C-x C-f" . my/find-file-or-browse-url)
    ("C-x C-o" . find-file)
    ("C-x TAB" . other-window)
