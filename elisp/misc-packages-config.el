@@ -24,6 +24,11 @@
   :ensure t
   :straight t
   :preface
+  (defun kj/vterm-new ()
+    "Open a new Vterm buffer, even when another one already exists."
+    (interactive)
+    (vterm t))
+
   (defun kj/vterm-horizontal ()
     "Open vterm in a horizontal split below the current window."
     (interactive)
@@ -33,7 +38,7 @@
           (select-window window)
         (select-window (split-window-below))
         (vterm buffer-name))))
-  :bind (("C-x C-p" . vterm)
+  :bind (("C-x C-p" . kj/vterm-new)
          ("C-x <escape>" . kj/vterm-horizontal))
   :commands (vterm vterm-other-window vterm-other-frame)
   :init

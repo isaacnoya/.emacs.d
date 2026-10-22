@@ -42,6 +42,12 @@
   :hook
   (after-init . marginalia-mode))
 
+;; Keep the original capitalization of Dabbrev candidates when completing.
+(use-package dabbrev
+  :ensure nil
+  :custom
+  (dabbrev-case-replace nil))
+
 (use-package corfu
   :ensure t
   :straight t
