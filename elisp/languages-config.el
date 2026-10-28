@@ -65,16 +65,20 @@
   (python-indent-offset 4))
 
 ;; Debug Adapter Protocol
+(autoload 'my-rust-debug "rust-debug-config" nil t)
+(autoload 'my-fvkg-debug "rust-debug-config" nil t)
+
 (use-package dap-mode
   :ensure t
   :straight t
-  :after lsp-mode
   :commands (dap-debug
              dap-debug-last
              dap-debug-recent
              dap-breakpoint-toggle
              dap-breakpoint-delete-all)
-  :hook (python-base-mode . dap-mode)
+  :hook ((python-base-mode . dap-mode)
+         (rust-mode . dap-turn-on-dap-mode)
+         (rust-ts-mode . dap-turn-on-dap-mode))
   :custom
   (dap-auto-configure-features '(sessions locals controls tooltip))
   :bind
@@ -88,7 +92,11 @@
         ("C-c d n" . dap-next)
         ("C-c d i" . dap-step-in)
         ("C-c d o" . dap-step-out)
-        ("C-c d q" . dap-disconnect))
+        ("C-c d q" . dap-disconnect)
+        ("C-c d s" . my-rust-debug)
+        ("C-c d f" . my-fvkg-debug)
+        ("C-c d e" . dap-eval)
+        ("C-c d R" . dap-ui-repl))
   :config
   (dap-auto-configure-mode 1)
   (require 'dap-python)
